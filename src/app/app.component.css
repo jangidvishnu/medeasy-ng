@@ -1,0 +1,47 @@
+.header_area {
+    background-color: transparent;
+    position: absolute;
+    width: 100%;
+    z-index: 90;
+    height: 100px;
+    top: 0;
+    left: 0;
+    padding: 0 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-transition-duration: 500ms;
+    transition-duration: 500ms;
+}
+
+.bg-custom {
+    background-color: #3c3e49;
+}
+
+.is-sticky .header_area {
+    background-color: rgba(4, 8, 29, 0.85);
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    border-bottom: 1px solid transparent;
+}
+
+.header_area .navbar-brand {
+    padding: 0;
+    margin-right: 0;
+    font-size: 30px;
+    color: #fff;
+    font-weight: 700;
+}
+
+.header_area .navbar {
+    padding: 0;
+}
+
+.navbar-expand-lg .navbar-nav .nav-link {
+    padding-right: 25px;
+    padding-left: 25px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+}
