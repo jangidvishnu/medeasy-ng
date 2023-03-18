@@ -1,0 +1,28 @@
+<form class="form-inline my-2 my-lg-0">
+    <input class="form-control mr-sm-2 w-75 " type="search" placeholder="Enter the name of medicine"
+        aria-label="Search">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+</form>
+
+
+<!----------------------- Request List -------------------->
+<div *ngIf="searchResults.length > 0" class="mt-4 table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-bordered table-responsive-sm">
+        <thead class="bg-secondary">
+            <tr>
+                <th class="heading" scope="col">Name</th>
+                <th class="heading" scope="col">Composition</th>
+                <th class="heading" scope="col">Manufacturer</th>
+                <th class="heading" scope="col">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let result of searchResults">
+                <td style="font-weight: bold;">{{result.name}}</td>
+                <td>{{result.composition}}</td>
+                <td>{{result.composition}}</td>
+                <td>{{result.composition}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

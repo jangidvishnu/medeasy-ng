@@ -1,0 +1,33 @@
+.addBtn{
+    display:inline-block;
+    font-weight: bolder;
+    height: 100%;
+    line-height: 67px;
+    font-size:xx-large;
+    color: white;
+}
+
+button{
+    cursor: pointer;
+}
+
+.modal{
+    display: block;
+    backdrop-filter: blur(2px);
+}
+
+.add-Circle{
+    box-shadow: 1px 1px 20px black;
+    cursor: pointer;
+    text-align: center;
+    width: 75px;
+    height: 75px;
+    background-color: rgb(94, 93, 92);
+    border-radius: 50%;
+    display: inline-block;
+    position: fixed;
+    bottom: 10%;
+    right: 8%;   
+}
+
+

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { LoggedInUserDataService } from './logged-in-user-data.service';
-import { UserService } from './user.service';
+import { LoggedInUserDataService } from './services/logged-in-user-data/logged-in-user-data.service';
+import { UserService } from './services/user/user.service';
 
 @Component({
   selector: 'app-root',

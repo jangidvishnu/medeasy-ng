@@ -1,0 +1,183 @@
+<!-------- Add MOdal  -->
+
+<div *ngIf="addModalStatus" class="modal fade show" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add A Report</h5>
+                <button (click)="toggleAddModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="description" class="col-form-label">Report Name : </label>
+                        <!-- <textarea #description class="ml-2" name="description" id="description" cols="35"
+                            rows="1"></textarea> -->
+                        <input #description formControlName="description" class="ml-2" type="text" name="description"
+                            id="description">
+                    </div>
+                    <div class="form-group">
+                        <label for="file" class="col-form-label">Attachment : </label>
+                        <input class="ml-2" (change)="fileChange($event,1)" type="file" accept="image/*" type="file"
+                            name="image" id="image">
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="pincode" class="col-form-label">Your Pincode : </label>
+                        <input #pincode formControlName="pincode" [value]="loggedInUserData.user?.pincode" class="ml-2"
+                            type="text" name="pincode" id="pincode">
+                    </div> -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="toggleAddModal()">Close</button>
+                <button type="button" class="btn btn-primary"
+                    (click)="sendRequest(description.value, pincode.value)">Add Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Modal Ends -->
+
+<!-- Image Modal -->
+
+<div *ngIf="imageModalStatus" class="modal fade show" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Request Image</h5>
+                <button (click)="toggleImageModal()" type="button" class="close" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" src="{{imageUrl}}docs/{{activeImage}}" alt="">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Image Modal Ends -->
+
+<!-- Reply Modal -->
+
+<div *ngIf="replyModalStatus" class="modal fade show" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Reply to request</h5>
+                <button (click)="toggleReplyModal()" type="button" class="close" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        Select Availaibility :
+                        <br>
+                        <label (click)="setStatus('Available')" style="margin-left: 40%;">
+                            Available
+                            <input type="radio" name="status" value="Available">
+                        </label>
+                        <br>
+                        <label (click)="setStatus('Not Available')" style="margin-left: 40%;">
+                            Not Available
+                            <input type="radio" name="status" value="Not Available">
+                        </label>
+                        <br>
+                        <label (click)="setStatus('Partial Available')" style="margin-left: 40%;">
+                            Partial Available
+                            <input type="radio" name="status" value="Partial Available">
+                        </label>
+                    </div>
+                    {{status}}
+                    <div class="form-group">
+                        <label for="remarks" class="col-form-label">Remarks or Comments : </label>
+                        <textarea #remarks class="ml-2" name="remarks" id="remarks" cols="35" rows="1"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="toggleReplyModal()">Close</button>
+                <button type="button" class="btn btn-primary" (click)="replyRequest(remarks.value)">Reply</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Reply Ends -->
+
+<!-- View Replies Modal -->
+
+<div *ngIf="viewRepliesModalStatus" class="modal fade show" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Replies</h5>
+                <button (click)="toggleViewRepliesModal()" type="button" class="close" data-dismiss="modal"
+                    aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!----------------------- Replies List -------------------->
+                <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                    <table class="table table-bordered table-responsive-lg">
+                        <thead class="bg-secondary">
+                            <tr>
+                                <th class="heading" scope="col">Store Name</th>
+                                <th class="heading" scope="col">Store Address</th>
+                                <th class="heading" scope="col">Status</th>
+                                <th class="heading" scope="col">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let reply of replies">
+                                <td style="font-weight: bold;">{{reply.store_name}}</td>
+                                <td>{{reply.store_address}}</td>
+                                <td>{{reply.status}}</td>
+                                <td>{{reply.remarks}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Replies List Ends -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- View Replies Ends -->
+
+
+<!----------------------- Request List -------------------->
+<div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-bordered table-responsive-sm">
+        <thead class="bg-secondary">
+            <tr>
+                <th class="heading" scope="col">Report Name</th>
+                <th class="heading" scope="col">Attachment</th>
+                <th class="heading" scope="col">Report Date</th>
+                <th class="heading" scope="col">Related Appointments</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let report of patientReports">
+                <td style="font-weight: bold;">{{report.name}}</td>
+                <td><a href="{{report.attachment}}" target="_blank">{{report.attachment}}</a></td>
+                <td>{{report.reportDate}}</td>
+                <td><span *ngFor="let appointment of report.relatedAppointments; let ind = index"><a
+                            routerLink="#">{{appointment}}</a>
+                        <span *ngIf="ind < report.relatedAppointments.length - 1">,</span></span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Request List Ends -->
+
+<!-- Add Button -->
+<div *ngIf="loggedInUserData.user?.role === USER_ROLES.PATIENT" (click)="toggleAddModal()" class="add-Circle">
+    <span class="addBtn">+</span>
+</div>

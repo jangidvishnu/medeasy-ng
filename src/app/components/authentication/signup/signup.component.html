@@ -1,0 +1,81 @@
+<!-- LOADER -->
+
+<div *ngIf="spinnerFlag" class="loading">Loading&#8230;</div>
+
+<div class="limiter">
+    <div class="container-login100 bg-overlay" style="background-image: url('{{imageUrl}}bg-img/hero-1.jpg');">
+        <div class="wrap-login100 p-t-30 p-b-50" style="margin-top: 7%;">
+            <span class="login100-form-title p-b-41 mb-2">
+                Account Signup
+            </span>
+            <form [formGroup]="signupForm" (ngSubmit)="signup()" class="login100-form validate-form p-b-33 p-t-5 py-4">
+
+                <div class="wrap-input100 validate-input pt-1 pb-1" style="padding-left: 80px; font-weight: 400; font-size: large;">
+                    Select Role : 
+
+                    <label>
+                        Patient
+                        <input formControlName="role" type="radio" name="role" placeholder="Customer"
+                            value="patient">
+                    </label>
+                    <label>
+                        Doctor
+                        <input  formControlName="role" type="radio" name="role" placeholder="Doctor"
+                            value="doctor">
+                    </label>
+                    <label>
+                        Chemist
+                        <input  formControlName="role" type="radio" name="role" placeholder="Chemist"
+                            value="chemist">
+                    </label>
+                </div>
+
+                <div *ngIf="getRole().value=='Chemist'" class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="name" type="text" name="name" placeholder="Store Name">
+                </div>
+
+                <div *ngIf="getRole().value != 'Chemist'" class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="name" type="text" name="name" placeholder="Full Name">
+                </div>
+
+                <div class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="email" type="email" name="email" placeholder="Email">
+                </div>
+
+                <div *ngIf="getRole().value=='Chemist'" class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="address" type="text" name="address" placeholder="Address of Store">
+                </div>
+
+                <div *ngIf="getRole().value !='Customer'" class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="address" type="text" name="address" placeholder="Home Address">
+                </div>
+
+                <div class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="pincode" type="number" name="pincode" placeholder="Pincode">
+                </div>
+
+               
+
+                <div class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="password" type="password" name="password"
+                        placeholder="Password">
+                </div>
+
+                <div class="wrap-input100 validate-input p-1">
+                    <input class="input100" formControlName="repassword" type="password" name="repassword"
+                        placeholder="Confirm Password">
+                </div>
+
+
+                <div class="container-login100-form-btn" style="text-align: center;">
+                    <button class="btn fancy-btn my-4" style="color: black; " type="submit">
+                        Sign up
+                    </button>
+                </div>
+            </form>
+            <div class="text-white mt-1 ">
+                <span> Already have an account <a style="color: whitesmoke; font-weight: 700;" routerLink="/login"> Login</a></span>
+            </div>
+        </div>
+    </div>
+</div>

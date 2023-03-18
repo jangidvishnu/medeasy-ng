@@ -1,0 +1,51 @@
+<!-- LOADER -->
+
+<div *ngIf="spinnerFlag" class="loading">Loading&#8230;</div>
+
+<div class="row mx-0" style=" margin-top: 100px;">
+    <div class="col-sm-2" style="background-color: #3c3e49;">
+        <div class="wrapper">
+            <div class="sidebar">
+                <div class="sidebar-wrapper">
+
+                    <ul class="nav">
+                        <li [class.active]="this.router.url=='/user/(user:profile)'">
+
+                            <a [routerLink]="[{outlets: {user: 'profile'}}]">
+                                <p>Profile</p>
+                            </a>
+                        </li>
+                        <li [class.active]="this.router.url=='/user/(user:appointments)'">
+                            <a [routerLink]="[{outlets: {user: 'appointments'}}]">
+                                <p>Appointments</p>
+                            </a>
+                        </li>
+                        <li *ngIf="loggedInUserData.user?.role === userRoles.DOCTOR" [class.active]="this.router.url=='/user/(user:patients)'">
+                            <a [routerLink]="[{outlets: {user: 'patients'}}]">
+                                <p>Patients</p>
+                            </a>
+                        </li>
+                        <li *ngIf="loggedInUserData.user?.role === userRoles.PATIENT" [class.active]="this.router.url=='/user/(user:reports)'">
+                            <a [routerLink]="[{outlets: {user: 'reports'}}]">
+                                <p>Reports</p>
+                            </a>
+                        </li>
+                        <li *ngIf="loggedInUserData.user?.role === userRoles.PATIENT" [class.active]="this.router.url=='/user/(user:alternatives)'">
+                            <a [routerLink]="[{outlets: {user: 'alternatives'}}]">
+                                <p>Search Alternatives</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a (click)="logout()" routerLink="notifications.html">
+                                <p>Logout<i class="fa fa-sign-out" style="font-size:250%"></i></p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-10 mt-5">
+        <router-outlet name="user"></router-outlet>
+    </div>
+</div>
