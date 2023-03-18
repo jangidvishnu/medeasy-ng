@@ -9,10 +9,11 @@ import { AppointmentsComponent } from './appointments/appointments.component';
 import { ReportsComponent } from './reports/reports.component';
 import { SearchAlternativesComponent } from './search-alternatives/search-alternatives.component';
 import { AppointmentDetailsComponent } from './appointment-details/appointment-details.component';
+import { PatientsListComponent } from './doctor/patients-list/patients-list.component';
 
 
 @NgModule({
-  declarations: [ProfileComponent, RequestsComponent, ProfileComponent, DoctorProfileComponent, AppointmentsComponent, ReportsComponent, SearchAlternativesComponent, AppointmentDetailsComponent],
+  declarations: [ProfileComponent, RequestsComponent, ProfileComponent, DoctorProfileComponent, AppointmentsComponent, ReportsComponent, SearchAlternativesComponent, AppointmentDetailsComponent, PatientsListComponent],
   imports: [
     CommonModule,
     UserRoutingModule

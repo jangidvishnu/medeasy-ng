@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MedicineService } from 'src/app/services/medicine/medicine.service';
 
 @Component({
   selector: 'app-search-alternatives',
@@ -7,15 +8,52 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SearchAlternativesComponent implements OnInit {
 
-  searchResults: any = [{
-    name: "paracip",
-    manufacturer: "cipla",
-    composition: "paracetamol"
-  }];
+  MODES = {
+    INDIVIDUAL: "individual",
+    PRESC: "presc"
+  };
 
-  constructor() { }
+  activeMode = this.MODES.INDIVIDUAL;
+
+
+  suggestions: any = [];
+  searchResults: any = [];
+  searchBoxValue = "";
+
+  constructor(private medicineService: MedicineService) { }
 
   ngOnInit(): void {
   }
 
+  setActiveMode(mode) {
+    this.activeMode = mode;
+  }
+
+  searchMedicinesByName(name) {
+    this.searchBoxValue = name;
+    name && name.length >= 2 && this.medicineService.getMedicinesByName(name).subscribe(
+      (res) => {
+        if (res.success) {
+          this.suggestions = res.data.medicines;
+        }
+        else {
+          this.suggestions = [];
+        }
+      }
+    )
+  }
+
+  searchAlternative(medicine) {
+    medicine.id && this.medicineService.getAltMedicinesById(medicine.id).subscribe(
+      (res) => {
+        if (res.success) {
+          this.searchBoxValue = medicine.name;
+          this.searchResults = res.data.alternatives;
+        }
+        else {
+          this.searchResults = [];
+        }
+      }
+    )
+  }
 }

@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   api_url : 'http://localhost:3000/',
-  image_url : './assets/img/'
+  image_url : './assets/img/',
+  py_api_url : 'http://localhost:5000/',
 };
 
 /*

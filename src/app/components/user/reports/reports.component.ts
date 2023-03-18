@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UserRoles } from 'src/app/constants/UserRoles';
 import { LoggedInUserDataService } from 'src/app/services/logged-in-user-data/logged-in-user-data.service';
 import { RequestService } from 'src/app/services/request/request.service';
+import { ReportsService } from 'src/app/services/user/reports.service';
 import { environment } from 'src/environments/environment';
 
 
@@ -16,36 +17,23 @@ export class ReportsComponent implements OnInit {
   USER_ROLES = UserRoles;
   imageUrl = environment.image_url;
   activeImage: string = "";
-  patientReports = [
-    {
-      "name": "Blood Sugar",
-      "attachment": "https://templatelab.com/wp-content/uploads/2016/09/blood-sugar-chart-01-screenshot.jpg",
-      "reportDate": "2023, Jan 19",
-      "relatedAppointments": ["1", "2"]
-    }, {
-      "name": "Blood Pressure",
-      "attachment": "https://templatelab.com/wp-content/uploads/2016/09/blood-sugar-chart-01-screenshot.jpg",
-      "reportDate": "2023, Jan 31",
-      "relatedAppointments": ["2", "3"]
-    }
-  ];
-  replies = [];
+  patientReports = [];
+
   activeRequestId: Number;
-  requestStatus: string = '';
   addModalStatus: boolean = false;
   imageModalStatus: boolean = false;
-  replyModalStatus: boolean = false;
   viewRepliesModalStatus: boolean = false;
-
+  fileBlob: any = undefined;
   memberUploadedFiles: Array<File> = [];
 
   constructor(public loggedInUserData: LoggedInUserDataService, private toastr: ToastrService
-    , private requestService: RequestService) {
+    , private requestService: RequestService, private reportService: ReportsService) {
   }
 
   ngOnInit(): void {
-    if (this.loggedInUserData.user?.role == 'Customer') {
+    if (this.loggedInUserData.user?.role == UserRoles.PATIENT) {
       this.getRequests();
+      this.getReportsOfPatient(this.loggedInUserData.user?.id);
     }
     if (this.loggedInUserData.user?.role == 'Chemist') {
       this.getStoreRequests();
@@ -63,16 +51,6 @@ export class ReportsComponent implements OnInit {
       }
     )
   }
-
-  setStatus(status) {
-    this.requestStatus = status;
-  }
-
-  setActiveRequestId(id) {
-    this.activeRequestId = id;
-    this.toggleReplyModal();
-  }
-
 
   getStoreRequests() {
     this.requestService.getStoreRequests().subscribe(
@@ -99,94 +77,56 @@ export class ReportsComponent implements OnInit {
   toggleImageModal() {
     this.imageModalStatus = !this.imageModalStatus;
   }
-  toggleReplyModal() {
-    this.replyModalStatus = !this.replyModalStatus;
-  }
   toggleViewRepliesModal() {
     this.viewRepliesModalStatus = !this.viewRepliesModalStatus;
   }
 
-
+  changeFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
 
   fileChange(element) {
     this.memberUploadedFiles = element.target.files;
+    const file = element.target.files[0];
+    this.changeFile(file).then((base64: string): any => {
+      this.fileBlob = base64;
+    });
   }
 
-  getReplyOfRequest(request_id) {
-    this.toggleViewRepliesModal();
-    this.requestService.getRepliesOfRequest(request_id).subscribe(
+  addReport(description) {
+    if (this.fileBlob && description) {
+      this.reportService.addReport(description, this.fileBlob, this.loggedInUserData.user?.id, null).subscribe(
+        (res) => {
+          if (res.success) {
+            this.toastr.success("Report Added Successfully", "MedEasy Admin", { closeButton: true });
+          }
+          else {
+            this.toastr.error(res.msg, "MedEasy Admin", { closeButton: true });
+          }
+        }
+      );
+      this.toggleAddModal();
+    } else {
+      this.toastr.error("Please attach report file and fill name of report", "MedEasy Admin", { closeButton: true });
+    }
+  }
+
+  getReportsOfPatient(id) {
+    this.reportService.getReportsByPatientId(id).subscribe(
       (res) => {
         if (res.success) {
-          this.replies = res.data.replies;
+          this.patientReports = res.data;
+          this.toastr.success("Reports Fetched Successfully", "MedEasy Admin", { closeButton: true });
         }
         else {
-          this.replies = [];
+          this.toastr.error(res.msg, "MedEasy Admin", { closeButton: true });
         }
       }
-    )
-  }
-
-  replyRequest(remarks) {
-    if (remarks && this.requestStatus && this.activeRequestId) {
-      this.toggleReplyModal();
-      this.requestService.replyRequest(this.activeRequestId, remarks, this.requestStatus).subscribe(
-        (res) => {
-          if (res.success) {
-            this.toastr.success("Reply Sent Successfully", "MedEasy Admin", { closeButton: true });
-            this.getStoreRequests();
-          }
-          else {
-            this.toastr.success(res.msg, "MedEasy Admin", { closeButton: true });
-          }
-        }
-      )
-    }
-    else {
-      this.toastr.error("Fields are Missing", "Meadeasy Admin", { closeButton: true });
-    }
-  }
-
-  sendRequest(description, pincode) {
-    console.log(description, pincode);
-    let requestForm = new FormData();
-    if (this.memberUploadedFiles.length) {
-      if (description) {
-        requestForm.append("description", description.toString());
-        requestForm.append("pincode", pincode.toString());
-      }
-      for (var i = 0; i < this.memberUploadedFiles.length; i++) {
-        requestForm.append("request_file", this.memberUploadedFiles[i], this.memberUploadedFiles[i].name);
-      }
-      this.requestService.sendRequest(requestForm).subscribe(
-        (res) => {
-          if (res.success) {
-            this.toastr.success("Request Successfully Sent", "MedEasy Admin", { closeButton: true });
-          }
-          else {
-            this.toastr.error(res.msg, "MedEasy Admin", { closeButton: true });
-          }
-        }
-      );
-      this.toggleAddModal();
-    }
-    else if (description) {
-      requestForm.append("description", description.toString());
-      requestForm.append("pincode", pincode.toString());
-      this.requestService.sendRequest(requestForm).subscribe(
-        (res) => {
-          if (res.success) {
-            this.toastr.success("Request Successfully Sent", "MedEasy Admin", { closeButton: true });
-          }
-          else {
-            this.toastr.error(res.msg, "MedEasy Admin", { closeButton: true });
-          }
-        }
-      );
-      this.toggleAddModal();
-    }
-    else {
-      this.toastr.error("Please attach image or fill description", "MedEasy Admin", { closeButton: true });
-    }
-
+    );
   }
 }

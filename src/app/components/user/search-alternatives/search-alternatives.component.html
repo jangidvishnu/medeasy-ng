@@ -1,27 +1,47 @@
-<form class="form-inline my-2 my-lg-0">
-    <input class="form-control mr-sm-2 w-75 " type="search" placeholder="Enter the name of medicine"
-        aria-label="Search">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+<!-- Radio Buttons -->
+<div class="ml-2 btn-group btn-group-toggle row" data-toggle="buttons">
+    <label style="cursor: pointer;" (click)="setActiveMode(MODES.INDIVIDUAL)" class="btn btn-secondary active">
+        <input type="radio" class="px-2" name="options" id="seacrhAltindividual"
+            (click)="setActiveMode(MODES.INDIVIDUAL)" checked>
+        Individual
+    </label>
+    <label style="cursor: pointer;" (click)="setActiveMode(MODES.PRESC)" class="btn btn-primary">
+        <input type="radio" class="px-2" name="options" (click)="setActiveMode(MODES.PRESC)"
+            id="seacrhAltPrescriptions">Prescriptions</label>
+</div>
+
+
+<!-- SEARCH BAR -->
+<form *ngIf="activeMode == MODES.INDIVIDUAL" class="form-inline mt-4 mb-2">
+    <input #medicineName class="form-control mr-sm-2 w-75 " type="search" placeholder="Enter the name of medicine"
+        aria-label="Search" (input)="searchMedicinesByName(medicineName.value)" id="dropdownMenuButton"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="{{this.searchBoxValue}}">
+    <div class="dropdown-menu col-8" aria-labelledby="dropdownMenuButton">
+        <a *ngFor="let suggestion of this.suggestions" style="cursor: pointer;" class="dropdown-item"
+            (click)="this.searchAlternative(suggestion)">{{suggestion.name}}</a>
+    </div>
 </form>
 
 
-<!----------------------- Request List -------------------->
-<div *ngIf="searchResults.length > 0" class="mt-4 table-wrapper-scroll-y my-custom-scrollbar">
+<!----------------------- SEARCH RESULTS -------------------->
+<div *ngIf="activeMode == MODES.INDIVIDUAL && searchResults.length > 0"
+    class="mt-4 table-wrapper-scroll-y my-custom-scrollbar">
+    <h2>Alternatives</h2>
     <table class="table table-bordered table-responsive-sm">
         <thead class="bg-secondary">
             <tr>
                 <th class="heading" scope="col">Name</th>
-                <th class="heading" scope="col">Composition</th>
+                <th class="heading" scope="col">Compounds</th>
                 <th class="heading" scope="col">Manufacturer</th>
-                <th class="heading" scope="col">Price</th>
+                <th class="heading" scope="col">Price/pc (Rs.)</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let result of searchResults">
                 <td style="font-weight: bold;">{{result.name}}</td>
-                <td>{{result.composition}}</td>
-                <td>{{result.composition}}</td>
-                <td>{{result.composition}}</td>
+                <td>{{result.compounds}}</td>
+                <td>{{result.manufacturer}}</td>
+                <td>{{result.price}}</td>
             </tr>
         </tbody>
     </table>
