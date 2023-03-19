@@ -1,4 +1,4 @@
-<!-------- Add MOdal  -->
+<!-------- MAKE APPOINTMENT MODAL  -->
 <div *ngIf="addModalStatus" class="modal fade show" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -12,9 +12,14 @@
                 <form>
                     <div class="form-group">
                         <label class="col-form-label" for="doctorName">Doctor : </label>
-                        <input #doctorName formControlName="doctorName" class="form-control" type="search"
-                            name="doctorName" id="doctorName" placeholder="Enter the name of doctor"
-                            aria-label="Search">
+                        <input (input)="this.getDoctors(doctorName.value)" #doctorName formControlName="doctorName"
+                            class="form-control" type="search" name="doctorName" placeholder="Enter the name of doctor"
+                            aria-label="Search" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false" [value]="this.searchBoxValue">
+                        <div class="dropdown-menu col-8" aria-labelledby="dropdownMenuButton">
+                            <a *ngFor="let doctor of this.doctorsList" style="cursor: pointer;" class="dropdown-item"
+                                (click)="this.setSelectedDoctor(doctor)">{{doctor.name}}</a>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="col-form-label" for="issue">Issue/Disease : </label>
@@ -36,7 +41,8 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" (click)="toggleAddModal()">Close</button>
                 <button type="button" class="btn btn-primary"
-                    (click)="sendRequest(description.value, pincode.value)">Send request</button>
+                    (click)="this.makeAppointment(issue.value,symptoms.value,preferredDate.value)">Send
+                    request</button>
             </div>
         </div>
     </div>
@@ -56,103 +62,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                <img class="img-fluid" src="{{imageUrl}}docs/{{activeImage}}" alt="">
+                <img class="img-fluid" src="{{activeImage}}" alt="">
             </div>
         </div>
     </div>
 </div>
 <!-- Image Modal Ends -->
-
-<!-- Reply Modal -->
-
-<div *ngIf="replyModalStatus" class="modal fade show" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Reply to request</h5>
-                <button (click)="toggleReplyModal()" type="button" class="close" data-dismiss="modal"
-                    aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                        Select Availaibility :
-                        <br>
-                        <label (click)="setStatus('Available')" style="margin-left: 40%;">
-                            Available
-                            <input type="radio" name="status" value="Available">
-                        </label>
-                        <br>
-                        <label (click)="setStatus('Not Available')" style="margin-left: 40%;">
-                            Not Available
-                            <input type="radio" name="status" value="Not Available">
-                        </label>
-                        <br>
-                        <label (click)="setStatus('Partial Available')" style="margin-left: 40%;">
-                            Partial Available
-                            <input type="radio" name="status" value="Partial Available">
-                        </label>
-                    </div>
-                    {{status}}
-                    <div class="form-group">
-                        <label for="remarks" class="col-form-label">Remarks or Comments : </label>
-                        <textarea #remarks class="ml-2" name="remarks" id="remarks" cols="35" rows="1"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="toggleReplyModal()">Close</button>
-                <button type="button" class="btn btn-primary" (click)="replyRequest(remarks.value)">Reply</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Reply Ends -->
-
-<!-- View Replies Modal -->
-
-<div *ngIf="viewRepliesModalStatus" class="modal fade show" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Replies</h5>
-                <button (click)="toggleViewRepliesModal()" type="button" class="close" data-dismiss="modal"
-                    aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!----------------------- Replies List -------------------->
-                <div class="table-wrapper-scroll-y my-custom-scrollbar">
-                    <table class="table table-bordered table-responsive-lg">
-                        <thead class="bg-secondary">
-                            <tr>
-                                <th class="heading" scope="col">Store Name</th>
-                                <th class="heading" scope="col">Store Address</th>
-                                <th class="heading" scope="col">Status</th>
-                                <th class="heading" scope="col">Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let reply of replies">
-                                <td style="font-weight: bold;">{{reply.store_name}}</td>
-                                <td>{{reply.store_address}}</td>
-                                <td>{{reply.status}}</td>
-                                <td>{{reply.remarks}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Replies List Ends -->
-            </div>
-        </div>
-    </div>
-</div>
-<!-- View Replies Ends -->
-
 
 <!----------------------- Appointments List -------------------->
 <div *ngIf="activeAppointment">
@@ -175,8 +90,18 @@
                 <!-- <th class="heading" scope="col">Status</th> -->
             </tr>
         </thead>
-        <tbody>
+        <tbody *ngIf="this.loggedInUserData.user?.role === 'patient'">
             <tr *ngFor="let appointment of appointments">
+                <td style="font-weight: bold; cursor: pointer;" class="btn-link"
+                    (click)="setActiveAppointment(appointment)">{{appointment.id}}</td>
+                <td>{{appointment.issue}}</td>
+                <td *ngIf="loggedInUserData.user?.role == USER_ROLES.PATIENT">{{appointment.doctorName}}</td>
+                <td>{{appointment.slot}}</td>
+                <td>{{appointment.status}}</td>
+            </tr>
+        </tbody>
+        <tbody *ngIf="this.loggedInUserData.user?.role != 'patient'">
+            <tr *ngFor="let appointment of doctorAppointments">
                 <td style="font-weight: bold; cursor: pointer;" class="btn-link"
                     (click)="setActiveAppointment(appointment)">{{appointment.id}}</td>
                 <td>{{appointment.issue}}</td>
@@ -233,12 +158,7 @@
         </div>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
             <div class="card-body">
-                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
-                moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.
-                Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda
-                shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea
-                proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim
-                aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                Name, Blood Group
             </div>
         </div>
     </div>
@@ -246,7 +166,7 @@
 <div id="accordion3" class="mt-1" *ngIf="loggedInUserData.user?.role === USER_ROLES.DOCTOR && activeAppointment">
     <div class="card">
         <div class="card-header" id="headingThree" style="cursor: pointer;" data-toggle="collapse"
-            data-target="#collapseThree" aria-controls="collapseThree">
+            data-target="#collapseThree" aria-controls="collapseThree" (click)="this.getReportsOfPatient(6)">
             <h5 class="mb-0">
                 <span>
                     Reports
@@ -256,12 +176,33 @@
         </div>
         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
             <div class="card-body">
-                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
-                moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod.
-                Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda
-                shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea
-                proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim
-                aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                <!----------------------- Request List -------------------->
+                <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                    <table class="table table-bordered table-responsive-sm">
+                        <thead class="bg-secondary">
+                            <tr>
+                                <th class="heading" scope="col">Report Name</th>
+                                <th class="heading" scope="col">Attachment</th>
+                                <th class="heading" scope="col">Report Date</th>
+                                <th class="heading" scope="col">Related Appointments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let report of patientReports">
+                                <td style="font-weight: bold;">{{report.name}}</td>
+                                <td><a style="cursor: pointer; text-decoration: underline; color: blue;"
+                                        (click)="setActiveImage(report.attachment)">View
+                                        {{report.name}}</a></td>
+                                <td>{{report.created}}</td>
+                                <td><span *ngFor="let appointment of report.relatedAppointments; let ind = index"><a
+                                            routerLink="#">{{appointment}}</a>
+                                        <span *ngIf="ind < report.relatedAppointments.length - 1">,</span></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Request List Ends -->
             </div>
         </div>
     </div>

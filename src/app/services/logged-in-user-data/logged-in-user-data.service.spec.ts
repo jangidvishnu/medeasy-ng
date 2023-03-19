@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { LoggedInUserDataService } from './services/logged-in-user-data/logged-in-user-data.service';
+import { LoggedInUserDataService } from './logged-in-user-data.service';
 
 describe('LoggedInUserDataService', () => {
   let service: LoggedInUserDataService;

@@ -46,7 +46,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <img class="img-fluid" src="{{imageUrl}}docs/{{activeImage}}" alt="">
+                <img class="img-fluid" src="{{activeImage}}" alt="">
             </div>
         </div>
     </div>
@@ -67,8 +67,10 @@
         <tbody>
             <tr *ngFor="let report of patientReports">
                 <td style="font-weight: bold;">{{report.name}}</td>
-                <td><a href="{{report.attachment}}" target="_blank">{{report.name}}</a></td>
-                <td>{{report.reportDate}}</td>
+                <td><a style="cursor: pointer; text-decoration: underline; color: blue;"
+                        (click)="setActiveImage(report.attachment)">View
+                        {{report.name}}</a></td>
+                <td>{{report.created}}</td>
                 <td><span *ngFor="let appointment of report.relatedAppointments; let ind = index"><a
                             routerLink="#">{{appointment}}</a>
                         <span *ngIf="ind < report.relatedAppointments.length - 1">,</span></span></td>
